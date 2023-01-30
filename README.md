@@ -1,7 +1,6 @@
 # newsio-frontend
 
 ## Using the yarn package manager
-
 ### Install yarn
 ``` npm install --global yarn ```
 
