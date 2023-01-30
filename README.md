@@ -4,7 +4,7 @@
 ### Install yarn
 ``` npm install --global yarn ```
 
-Make sure you have cd'd into the project directory newsio
+Make sure you `cd` into the project directory `newsio`
 
 ### Install dependencies
 ``` yarn ```
