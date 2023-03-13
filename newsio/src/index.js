@@ -11,6 +11,8 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import NewsSearch from 'components/SearchNews';
 import SavedNews from 'components/SavedNews';
+import Protected from 'components/Protected';
+import ForgotPassword from 'components/ForgotPassword';
 
 const router = createBrowserRouter([
   {
@@ -19,11 +21,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'search',
-        element: <NewsSearch/>
+        element: <Protected><NewsSearch/></Protected>
       },
       {
         path: 'my-stories',
-        element: <SavedNews/>
+        element: <Protected><SavedNews/></Protected>
       },
       {
         path: 'login',
@@ -32,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: 'signup',
         element: <Signup/>
+      },
+      {
+        path: 'forgot-password',
+        element: <ForgotPassword/>
       }
     ]
   }

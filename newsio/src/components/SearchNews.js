@@ -1,8 +1,9 @@
+import { Typography } from '@mui/material'
 import React from 'react'
 
 const NewsSearch = () => {
   return (
-    <h1>News Search</h1>
+    <Typography variant='h4' textAlign='center'>News Search</Typography>
   )
 }
 

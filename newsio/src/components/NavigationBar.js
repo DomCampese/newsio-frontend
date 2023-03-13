@@ -4,6 +4,7 @@ import { Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, To
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from "react-router-dom";
+import { isLoggedIn } from 'api/authentication';
 
 const NavigationBar = () => {
   const pageToRoute = {
@@ -32,7 +33,15 @@ const NavigationBar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+    logout();
   };
+
+  const logout = () => {
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+    }
+    navigate('login');
+  }
 
   const handleMenuClick = (page) => {
     handleCloseNavMenu();
@@ -86,7 +95,7 @@ const NavigationBar = () => {
                 <Button
                   key={page}
                   onClick={() => handleMenuClick(page)}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  sx={{ my: 2, color: 'black', display: 'block' }}
                 >
                   {page}
                 </Button>
@@ -113,6 +122,7 @@ const NavigationBar = () => {
               </Button>
             ))}
           </Box>
+          {isLoggedIn() &&
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -141,7 +151,7 @@ const NavigationBar = () => {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </Box>}
         </Toolbar>
        </Container>
     </AppBar>

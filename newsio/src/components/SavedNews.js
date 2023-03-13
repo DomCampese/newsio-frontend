@@ -1,8 +1,9 @@
+import { Typography } from '@mui/material'
 import React from 'react'
 
 const SavedNews = () => {
   return (
-    <h1>My Stories</h1>
+    <Typography variant='h4' textAlign='center'>My Stories</Typography>
   )
 }
 
