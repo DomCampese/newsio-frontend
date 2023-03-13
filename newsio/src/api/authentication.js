@@ -23,3 +23,7 @@ export const login = (email, password) => {
 export const isLoggedIn = () => {
   return (window.localStorage.getItem('token') !== null);
 }
+
+export const getToken = () => {
+  return window.localStorage.getItem('token');
+}
