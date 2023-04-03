@@ -91,7 +91,7 @@ const NewsSearch = () => {
                     </Box>
                     <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
                   </Box>
-                  {story.image && <Box sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' component='img' src={story.image} height={'300px'} width='300px'></Box>}
+                  {story.image && <Box component='img' sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' src={story.image} height='300px' width='300px'></Box>}
                 </Box>
               </Box>
             );
