@@ -78,16 +78,21 @@ const NewsSearch = () => {
                   padding: 2
                 }}
               >
-                <Typography variant='h5'>{story.title}</Typography>
-                <Typography fontWeight='bold'>{story.source}</Typography>
-                <Typography color='gray'>{new Date(story.published_at).toDateString()}</Typography>
-                <Box sx={{ mt: 1, mb: 1 }}>
-                  <Chip sx={{ textTransform: 'uppercase' }} size='small' variant='outlined' color='secondary' label={story.category}/>
+                <Box className='news-story-content' display='flex'>
+                  <Box display='flex' flexDirection='column' justifyContent='center'>
+                    <Typography variant='h5'>{story.title}</Typography>
+                    <Typography fontWeight='bold'>{story.source}</Typography>
+                    <Typography color='gray'>{new Date(story.published_at).toDateString()}</Typography>
+                    <Box sx={{ mt: 1, mb: 1 }}>
+                      <Chip sx={{ textTransform: 'uppercase' }} size='small' variant='outlined' color='secondary' label={story.category}/>
+                    </Box>
+                    <Box sx={{ mt: 1, mb: 1 }}>
+                      <Typography>{story.description}</Typography>
+                    </Box>
+                    <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
+                  </Box>
+                  {story.image && <Box sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' component='img' src={story.image} height={'300px'} width='300px'></Box>}
                 </Box>
-                <Box sx={{ mt: 1, mb: 1 }}>
-                  <Typography>{story.description}</Typography>
-                </Box>
-                <Button variant='outlined' target='_blank' href={story.url}>Read more</Button>
               </Box>
             );
           })

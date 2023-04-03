@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 800px) {
+  .news-story-content {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .news-story-img {
+    margin-top: 10px;
+  }
+}
+
