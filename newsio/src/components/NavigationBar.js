@@ -33,7 +33,6 @@ const NavigationBar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-    logout();
   };
 
   const logout = () => {
@@ -146,7 +145,12 @@ const NavigationBar = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem
+                  key={setting}
+                  onClick={() => {
+                    logout();
+                    handleCloseUserMenu();
+                  }}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
