@@ -1,9 +1,11 @@
-import { Box, Container, TextField, Typography } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, Container, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
+import { getNews } from 'api/search';
 
 const NewsSearch = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [searchTermInvalid, setSearchTermInvalid] = useState(false);
+  const [news, setNews] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleUpdate = (event) => {
     event.preventDefault();
@@ -15,31 +17,81 @@ const NewsSearch = () => {
       return;
     }
     setSearchTermInvalid(false);
-    setSearchTerm(searchTerm);
+    doGetNews(searchTerm);
+  }
+
+  const doGetNews = (searchTerm) => {
+    setLoading(true);
+    getNews(searchTerm)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch news');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setNews(data);
+        console.log(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err)
+        setLoading(false);
+      })
   }
 
   return (
     <Container>
-      <Typography variant='h4' textAlign='center'>News Search</Typography>
       <Box
-        component="form"
+        component='form'
         onSubmit={handleUpdate}
         sx={{ mt: 3 }}
         display='flex'
-        justifyContent='center'
         alignItems='center'
+        justifyContent='space-between'
       >
+        <Typography variant='h4'>Find news</Typography>
         <TextField
-          sx={{ width: 600 }}
-          size="medium"
-          id="search-bar"
-          label="Keywords"
-          variant="outlined"
-          name="searchTerm"
+          sx={{ width: 600, ml: 5 }}
+          size='medium'
+          id='search-bar'
+          label='Search'
+          variant='outlined'
+          name='searchTerm'
           type='text'
           error={searchTermInvalid}
           helperText={searchTermInvalid && 'Letters and spaces only'}
         />
+      </Box>
+      <Box>
+        {(loading) 
+          ? <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress></CircularProgress>
+            </Box>
+          : (news) && news.newsStories.map((story) => {
+             return (
+              <Box
+                sx={{
+                  mt: 3,
+                  boxShadow: 2,
+                  borderRadius: 2,
+                  padding: 2
+                }}
+              >
+                <Typography variant='h5'>{story.title}</Typography>
+                <Typography fontWeight='bold'>{story.source}</Typography>
+                <Typography color='gray'>{new Date(story.published_at).toDateString()}</Typography>
+                <Box sx={{ mt: 1, mb: 1 }}>
+                  <Chip sx={{ textTransform: 'uppercase' }} size='small' variant='outlined' color='secondary' label={story.category}/>
+                </Box>
+                <Box sx={{ mt: 1, mb: 1 }}>
+                  <Typography>{story.description}</Typography>
+                </Box>
+                <Button variant='outlined' target='_blank' href={story.url}>Read more</Button>
+              </Box>
+            );
+          })
+        }
       </Box>
     </Container>
   )
