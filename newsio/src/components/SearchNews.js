@@ -17,12 +17,12 @@ const NewsSearch = () => {
       return;
     }
     setSearchTermInvalid(false);
-    doGetNews(searchTerm);
+    doGetNews({ searchTerm });
   }
 
-  const doGetNews = (searchTerm) => {
+  const doGetNews = ({ searchTerm }) => {
     setLoading(true);
-    getNews(searchTerm)
+    getNews({ keywords: searchTerm, sort: 'published_desc', languages: 'en' })
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch news');
@@ -68,7 +68,7 @@ const NewsSearch = () => {
           ? <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center' }}>
               <CircularProgress></CircularProgress>
             </Box>
-          : (news) && news.newsStories.map((story) => {
+          : (news && news.newsStories) && news.newsStories.map((story) => {
              return (
               <Box
                 sx={{
