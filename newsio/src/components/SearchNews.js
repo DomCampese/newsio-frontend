@@ -1,6 +1,7 @@
 import { Box, Button, Chip, CircularProgress, Container, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { getNews } from 'api/search';
+import { saveNews } from 'api/save';
 
 const NewsSearch = () => {
   const [searchTermInvalid, setSearchTermInvalid] = useState(false);
@@ -38,6 +39,14 @@ const NewsSearch = () => {
         console.error(err)
         setLoading(false);
       })
+  }
+
+  const doSaveNews = (storyInfo) => {
+    setLoading(true);
+    // console.log(storyInfo);
+    // console.log(typeof storyInfo.published_at);
+    saveNews(storyInfo);
+    setLoading(false);
   }
 
   return (
@@ -89,7 +98,10 @@ const NewsSearch = () => {
                     <Box sx={{ mt: 1, mb: 1 }}>
                       <Typography>{story.description}</Typography>
                     </Box>
-                    <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
+                    <div> {/* for buttons to be next to each other */}
+                      <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
+                      <Button sx={{ width: '120px' }} variant='outlined' onClick={() => doSaveNews(story)}>Save Story</Button>
+                    </div>
                   </Box>
                   {story.image && <Box component='img' sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' src={story.image} height='300px' width='300px'></Box>}
                 </Box>
