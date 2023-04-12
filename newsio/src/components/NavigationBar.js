@@ -1,10 +1,11 @@
 import React from 'react'
 import AppBar from '@mui/material/AppBar';
-import { Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from "react-router-dom";
 import { isLoggedIn } from 'api/authentication';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const NavigationBar = () => {
   const pageToRoute = {
@@ -125,7 +126,7 @@ const NavigationBar = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User's name" src="/static/images/avatar/2.jpg" />
+                <AccountCircleIcon fontSize='large' sx={{ color: 'white' }}></AccountCircleIcon>
               </IconButton>
             </Tooltip>
             <Menu

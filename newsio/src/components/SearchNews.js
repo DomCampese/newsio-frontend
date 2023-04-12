@@ -100,7 +100,7 @@ const NewsSearch = () => {
                     </Box>
                     <div> {/* for buttons to be next to each other */}
                       <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
-                      <Button sx={{ width: '120px' }} variant='outlined' onClick={() => doSaveNews(story)}>Save Story</Button>
+                      <Button sx={{ width: '120px', marginLeft: 0.5 }} variant='outlined' onClick={() => doSaveNews(story)}>Save Story</Button>
                     </div>
                   </Box>
                   {story.image && <Box component='img' sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' src={story.image} height='300px' width='300px'></Box>}

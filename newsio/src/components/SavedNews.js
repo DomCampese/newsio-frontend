@@ -62,7 +62,7 @@ const SavedNews = () => {
                   </Box>
                   <div> {/* for buttons to be next to each other */}
                     <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
-                    <Button sx={{ width: '150px' }} variant='outlined' onClick={() => doUnsaveNews(story)}>UnSave Story</Button>
+                    <Button sx={{ width: '150px', marginLeft: 0.5 }} variant='outlined' onClick={() => doUnsaveNews(story)}>UnSave Story</Button>
                   </div>
                 </Box>
                 {story.image && <Box component='img' sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' src={story.image} height='300px' width='300px'></Box>}

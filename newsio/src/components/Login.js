@@ -10,25 +10,46 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Alert } from '@mui/material';
 import { login } from 'api/authentication';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const theme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
+
+  const [alertMessage, setAlertMessage] = useState('');
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const emailEmpty = data.get('email') === '';
+    const passwordEmpty = data.get('password') === '';
+    if (emailEmpty || passwordEmpty) {
+      setEmailError(emailEmpty);
+      setPasswordError(passwordEmpty);
+      setAlertMessage('Please fill in all fields');
+      return;
+    }
+    setEmailError(false);
+    setPasswordError(false);
+
     login(
       data.get('email'),
       data.get('password')
     )
       .then((response) => {
+        if (response.status === 403) {
+          setAlertMessage('Incorrect username or password');
+        }
         if (!response.ok) {
           throw new Error();
         }
+        setAlertMessage('');
         return response.json();
       })
       .then((data) => {
@@ -36,7 +57,7 @@ export default function Login() {
         navigate('/search');
       })
       .catch(() => {
-        console.error('Unable to log in user');
+        console.error('Unable to log in user');        
       })
   };
 
@@ -68,6 +89,7 @@ export default function Login() {
               name="email"
               autoComplete="email"
               autoFocus
+              error={emailError}
             />
             <TextField
               margin="normal"
@@ -78,6 +100,7 @@ export default function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
+              error={passwordError}
             />
             <Button
               type="submit"
@@ -99,6 +122,7 @@ export default function Login() {
                 </Link>
               </Grid>
             </Grid>
+            {!!alertMessage && <Alert severity="error" sx={{ mt: 2 }}>{alertMessage}</Alert>}
           </Box>
         </Box>
       </Container>

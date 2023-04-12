@@ -12,6 +12,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { signup } from '../api/authentication.js';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Alert } from '@mui/material';
 
 const theme = createTheme();
 
@@ -19,9 +21,35 @@ export default function SignUp() {
 
   const navigate = useNavigate();
 
+  const [alertMessage, setAlertMessage] = useState('');
+  const [formFieldErrors, setFormFieldErrors] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false
+  });
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    let allFieldsFilledOut = true;
+    const newFormFieldErrors = {
+      firstName: false,
+      lastName: false,
+      email: false,
+      password: false
+    };
+    for (const fieldName in formFieldErrors) {
+      if (data.get(fieldName) === '') {
+        setAlertMessage('Please fill in all fields');
+        newFormFieldErrors[fieldName] = true;
+        allFieldsFilledOut = false;
+      }
+    }
+    setFormFieldErrors(newFormFieldErrors);
+    if (!allFieldsFilledOut) {
+      return
+    }
     signup(
       data.get('firstName'),
       data.get('lastName'),
@@ -40,6 +68,7 @@ export default function SignUp() {
       })
       .catch(() => {
         console.error('Unable to register user');
+        setAlertMessage('Unable create account');
       })
   };
 
@@ -72,6 +101,7 @@ export default function SignUp() {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  error={formFieldErrors.firstName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -82,6 +112,7 @@ export default function SignUp() {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  error={formFieldErrors.lastName}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -92,6 +123,7 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  error={formFieldErrors.email}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -103,6 +135,7 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  error={formFieldErrors.password}
                 />
               </Grid>
             </Grid>
@@ -121,6 +154,7 @@ export default function SignUp() {
                 </Link>
               </Grid>
             </Grid>
+            {!!alertMessage && <Alert severity="error" sx={{ mt: 2 }}>{alertMessage}</Alert>}
           </Box>
         </Box>
       </Container>
