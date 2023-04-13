@@ -57,7 +57,8 @@ export default function Login() {
         navigate('/search');
       })
       .catch(() => {
-        console.error('Unable to log in user');        
+        console.error('Unable to log in user');  
+        setAlertMessage('Unable to log in. Please try again later.');      
       })
   };
 
