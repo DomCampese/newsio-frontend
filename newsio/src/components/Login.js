@@ -45,8 +45,10 @@ export default function Login() {
       .then((response) => {
         if (response.status === 403) {
           setAlertMessage('Incorrect username or password');
+          throw new Error();
         }
         if (!response.ok) {
+          setAlertMessage('Unable to log in. Please try again later.');      
           throw new Error();
         }
         setAlertMessage('');
@@ -58,7 +60,6 @@ export default function Login() {
       })
       .catch(() => {
         console.error('Unable to log in user');  
-        setAlertMessage('Unable to log in. Please try again later.');      
       })
   };
 

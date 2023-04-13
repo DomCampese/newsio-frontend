@@ -57,7 +57,12 @@ export default function SignUp() {
       data.get('password')
     )
       .then((response) => {
+        if (response.status === 409) {
+          setAlertMessage('There is already an account with that email. Please log in or use a different email.');
+          throw new Error();
+        }
         if (!response.ok) {
+          setAlertMessage('Unable to register user');
           throw new Error();
         }
         return response.json();
@@ -68,7 +73,6 @@ export default function SignUp() {
       })
       .catch(() => {
         console.error('Unable to register user');
-        setAlertMessage('Unable create account');
       })
   };
 
