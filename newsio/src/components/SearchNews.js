@@ -1,12 +1,27 @@
-import { Box, Button, Chip, CircularProgress, Container, TextField, Typography } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, Container, FormControl, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { getNews } from 'api/search';
 import { saveNews } from 'api/save';
+import { NONE, categories, countries, languages } from 'api/filters';
 
 const NewsSearch = () => {
   const [searchTermInvalid, setSearchTermInvalid] = useState(false);
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [dropdownCategory, setDropdownCategory] = useState('');
+  const [dropdownLanguage, setDropdownLanguage] = useState('');
+  const [dropdownCountry, setDropdownCountry] = useState('');
+  const [selectedFilters, setSelectedFilters] = useState({
+    categories: [],
+    countries: [],
+    languages: []
+  })
+  const [filtersToAdd, setFiltersToAdd] = useState({
+    categories: [],
+    countries: [],
+    languages: []
+  })
 
   const handleUpdate = (event) => {
     event.preventDefault();
@@ -23,7 +38,7 @@ const NewsSearch = () => {
 
   const doGetNews = ({ searchTerm }) => {
     setLoading(true);
-    getNews({ keywords: searchTerm, sort: 'published_desc', languages: 'en' })
+    getNews({ ...selectedFilters, keyword: searchTerm })
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch news');
@@ -49,28 +64,53 @@ const NewsSearch = () => {
     setLoading(false);
   }
 
+  const saveSelectedFilters = () => {
+    setSelectedFilters({ ...filtersToAdd });
+    setShowFilterModal(false);
+  }
+
+  const renderFilterTags = (filterObject, setFilterObject) => {
+    return (
+      <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', width: 425 }}>
+        {Object.keys(filterObject).map(filterType => {
+          if (filterType === 'categories') {
+            return filterObject.categories.map(ca => <Box sx={{ mr: '3px' }}><Chip label={ca} variant="outlined" color='secondary' onDelete={() => setFilterObject({ ...filterObject, categories: filterObject.categories.filter(c => c !== ca) })}></Chip></Box>)
+          }
+          if (filterType === 'countries') {
+            return filterObject.countries.map(co => <Box sx={{ mr: '5px' }}><Chip label={co} variant="outlined" color='primary' onDelete={() => setFilterObject({ ...filterObject, countries: filterObject.countries.filter(c => c !== co) })}>{co}</Chip></Box>)
+          }
+          return filterObject.languages.map(la => <Box sx={{ mr: '5px' }}><Chip label={la} variant="outlined" color='success' onDelete={() => setFilterObject({ ...filterObject, languages: filterObject.languages.filter(l => l !== la) })}>{la}</Chip></Box>)
+        })}
+      </Box>
+    )
+  }
+
   return (
     <Container>
       <Box
         component='form'
         onSubmit={handleUpdate}
-        sx={{ mt: 3 }}
+        sx={{ mt: 3, flexDirection: 'column' }}
         display='flex'
-        alignItems='center'
-        justifyContent='space-between'
       >
         <Typography variant='h4'>Find news</Typography>
-        <TextField
-          sx={{ width: 600, ml: 5 }}
-          size='medium'
-          id='search-bar'
-          label='Search'
-          variant='outlined'
-          name='searchTerm'
-          type='text'
-          error={searchTermInvalid}
-          helperText={searchTermInvalid && 'Letters and spaces only'}
-        />
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <TextField
+            sx={{ width: 600, mt: 1, mr: 1 }}
+            size='medium'
+            id='search-bar'
+            label='Search'
+            variant='outlined'
+            name='searchTerm'
+            type='text'
+            error={searchTermInvalid}
+            helperText={searchTermInvalid && 'Letters and spaces only'}
+          />
+          <Button onClick={() => setShowFilterModal(true)} variant='contained' sx={{ mt: 1 }}>Filters</Button>
+        </Box>
+        {renderFilterTags(selectedFilters, setSelectedFilters)}
       </Box>
       <Box>
         {(loading) 
@@ -110,6 +150,82 @@ const NewsSearch = () => {
           })
         }
       </Box>
+      {showFilterModal &&
+        <Modal
+          open={showFilterModal}
+          onClose={() => setShowFilterModal(false)}
+          aria-labelledby="filter-modal"
+          aria-describedby="a modal for setting search filters"
+        >
+          <Box 
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 400,
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+              borderRadius: '8px'
+            }}
+          >
+            <Typography variant='h5'>Edit filters</Typography>
+            <FormControl sx={{ mt: 2 }}>
+              <InputLabel id="demo-simple-select-label">Category</InputLabel>
+              <Box sx={{ display: 'flex', alignItems: 'space-between', width: 400 }}>
+                <Select
+                  sx={{ width: '100%' }}
+                  label='Category'
+                  value={dropdownCategory}
+                  onChange={(e) => setDropdownCategory(e.target.value)}
+                >
+                  {Object.keys(categories).map(category =>
+                    <MenuItem value={categories[category]}>{category}</MenuItem>
+                  )}
+                </Select>
+                <Button onClick={() => {dropdownCategory && !filtersToAdd.categories.includes(dropdownCategory) && setFiltersToAdd({...filtersToAdd, categories: [...filtersToAdd.categories, dropdownCategory]})}} sx={{ ml: 0.5 }}>+ Add</Button>
+              </Box>
+            </FormControl>
+            <FormControl sx={{ mt: 2 }}>
+              <InputLabel id="demo-simple-select-label">Language</InputLabel>
+              <Box sx={{ display: 'flex', alignItems: 'space-between', width: 400 }}>
+                <Select
+                  sx={{ width: '100%' }}
+                  label='Language'
+                  value={dropdownLanguage}
+                  onChange={(e) => setDropdownLanguage(e.target.value)}
+                >
+                  <MenuItem value={NONE}>None</MenuItem>
+                  {Object.keys(languages).map(language =>
+                    <MenuItem value={languages[language]}>{language}</MenuItem>
+                  )}
+                </Select>
+                <Button onClick={() => {dropdownLanguage && !filtersToAdd.languages.includes(dropdownLanguage) && setFiltersToAdd({...filtersToAdd, languages: [...filtersToAdd.languages, dropdownLanguage]})}} sx={{ ml: 1 }}>+ Add</Button>
+              </Box>
+            </FormControl>
+            <FormControl sx={{ mt: 2 }}>
+              <InputLabel id="demo-simple-select-label">Country</InputLabel>
+              <Box sx={{ display: 'flex', alignItems: 'space-between', width: 400 }}>
+                <Select
+                  sx={{ width: '100%' }}
+                  label='Country'
+                  value={dropdownCountry}
+                  onChange={(e) => setDropdownCountry(e.target.value)}
+                >
+                  <MenuItem value={NONE}>None</MenuItem>
+                  {Object.keys(countries).map(country =>
+                    <MenuItem value={countries[country]}>{country}</MenuItem>
+                  )}
+                </Select>
+                <Button onClick={() => {dropdownCountry && !filtersToAdd.countries.includes(dropdownCountry) && setFiltersToAdd({...filtersToAdd, countries: [...filtersToAdd.countries, dropdownCountry]})}} sx={{ ml: 1 }}>+ Add</Button>
+              </Box>
+              <Button onClick={saveSelectedFilters} variant='contained' sx={{ mt: 2 }}>Done</Button>
+            </FormControl>
+            {renderFilterTags(filtersToAdd, setFiltersToAdd)}
+          </Box>
+        </Modal>
+      }
     </Container>
   )
 }
