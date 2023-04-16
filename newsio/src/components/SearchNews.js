@@ -58,8 +58,6 @@ const NewsSearch = () => {
 
   const doSaveNews = (storyInfo) => {
     setLoading(true);
-    // console.log(storyInfo);
-    // console.log(typeof storyInfo.published_at);
     saveNews(storyInfo);
     setLoading(false);
   }
@@ -127,7 +125,7 @@ const NewsSearch = () => {
                   padding: 2
                 }}
               >
-                <Box className='news-story-content' display='flex'>
+                <Box className='news-story-content' display='flex' sx={{ justifyContent: 'space-between' }}>
                   <Box display='flex' flexDirection='column' justifyContent='center'>
                     <Typography variant='h5'>{story.title}</Typography>
                     <Typography fontWeight='bold'>{story.source}</Typography>

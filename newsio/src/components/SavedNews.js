@@ -49,7 +49,7 @@ const SavedNews = () => {
                 padding: 2
               }}
             >
-              <Box className='news-story-content' display='flex'>
+              <Box className='news-story-content' display='flex' sx={{ justifyContent: 'space-between' }}>
                 <Box display='flex' flexDirection='column' justifyContent='center'>
                   <Typography variant='h5'>{story.title}</Typography>
                   <Typography fontWeight='bold'>{story.source}</Typography>
