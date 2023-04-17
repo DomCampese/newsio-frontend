@@ -27,3 +27,7 @@ export const isLoggedIn = () => {
 export const getToken = () => {
   return `Bearer ${window.localStorage.getItem('token')}`;
 }
+
+export const getEmail = () => {
+  return window.localStorage.getItem('email');
+}

@@ -38,6 +38,8 @@ export default function Login() {
     setEmailError(false);
     setPasswordError(false);
 
+    const userEmail = data.get('email').toString();
+
     login(
       data.get('email'),
       data.get('password')
@@ -56,6 +58,7 @@ export default function Login() {
       })
       .then((data) => {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('email', userEmail);
         navigate('/search');
       })
       .catch(() => {

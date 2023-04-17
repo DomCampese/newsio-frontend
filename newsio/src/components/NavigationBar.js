@@ -39,6 +39,7 @@ const NavigationBar = () => {
   const logout = () => {
     if (localStorage.getItem('token')) {
       localStorage.removeItem('token');
+      localStorage.removeItem('email');
     }
     navigate('login');
   }

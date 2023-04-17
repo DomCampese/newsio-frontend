@@ -50,6 +50,7 @@ export default function SignUp() {
     if (!allFieldsFilledOut) {
       return
     }
+    const userEmail = data.get('email').toString();
     signup(
       data.get('firstName'),
       data.get('lastName'),
@@ -69,6 +70,7 @@ export default function SignUp() {
       })
       .then((data) => {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('email', userEmail);
         navigate('/search');
       })
       .catch(() => {
