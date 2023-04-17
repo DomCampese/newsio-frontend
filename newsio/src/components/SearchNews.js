@@ -3,8 +3,10 @@ import React, { useState } from 'react'
 import { getNews } from 'api/search';
 import { saveNews } from 'api/save';
 import { NONE, categories, countries, languages } from 'api/filters';
+import { useEffect } from 'react';
 
 const NewsSearch = () => {
+  const [savedSearchTerm, setSavedSearchTerm] = useState('');
   const [searchTermInvalid, setSearchTermInvalid] = useState(false);
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,13 +16,13 @@ const NewsSearch = () => {
   const [dropdownCountry, setDropdownCountry] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     categories: [],
-    countries: [],
-    languages: []
+    countries: ['us'],
+    languages: ['en']
   })
   const [filtersToAdd, setFiltersToAdd] = useState({
     categories: [],
-    countries: [],
-    languages: []
+    countries: ['us'],
+    languages: ['en']
   })
 
   const handleUpdate = (event) => {
@@ -34,6 +36,7 @@ const NewsSearch = () => {
     }
     setSearchTermInvalid(false);
     doGetNews({ searchTerm });
+    setSavedSearchTerm(searchTerm);
   }
 
   const doGetNews = ({ searchTerm }) => {
@@ -55,6 +58,19 @@ const NewsSearch = () => {
         setLoading(false);
       })
   }
+
+  useEffect(() => doGetNews({ searchTerm: '' }), []);
+
+  useEffect(() => {
+    doGetNews({ searchTerm: savedSearchTerm });
+  }, [selectedFilters]);
+
+  useEffect(() => {
+    if (!showFilterModal) {
+      return;
+    }
+    setFiltersToAdd({ ...selectedFilters })
+  }, [showFilterModal])
 
   const doSaveNews = (storyInfo) => {
     setLoading(true);
@@ -81,6 +97,17 @@ const NewsSearch = () => {
         })}
       </Box>
     )
+  }
+
+  const handleAddFilter = (filterType, dropdownState, setDropdownState) => {
+    if (!dropdownState || filtersToAdd[filterType].includes(dropdownState)) {
+      return;
+    }
+    setFiltersToAdd({
+      ...filtersToAdd,
+      [filterType]: [...filtersToAdd[filterType], dropdownState]
+    })
+    setDropdownState('');
   }
 
   return (
@@ -182,7 +209,7 @@ const NewsSearch = () => {
                     <MenuItem value={categories[category]}>{category}</MenuItem>
                   )}
                 </Select>
-                <Button onClick={() => {dropdownCategory && !filtersToAdd.categories.includes(dropdownCategory) && setFiltersToAdd({...filtersToAdd, categories: [...filtersToAdd.categories, dropdownCategory]})}} sx={{ ml: 0.5 }}>+ Add</Button>
+                <Button onClick={() => handleAddFilter('categories', dropdownCategory, setDropdownCategory)} sx={{ ml: 0.5 }}>+ Add</Button>
               </Box>
             </FormControl>
             <FormControl sx={{ mt: 2 }}>
@@ -199,7 +226,7 @@ const NewsSearch = () => {
                     <MenuItem value={languages[language]}>{language}</MenuItem>
                   )}
                 </Select>
-                <Button onClick={() => {dropdownLanguage && !filtersToAdd.languages.includes(dropdownLanguage) && setFiltersToAdd({...filtersToAdd, languages: [...filtersToAdd.languages, dropdownLanguage]})}} sx={{ ml: 1 }}>+ Add</Button>
+                <Button onClick={() => handleAddFilter('languages', dropdownLanguage, setDropdownLanguage)} sx={{ ml: 1 }}>+ Add</Button>
               </Box>
             </FormControl>
             <FormControl sx={{ mt: 2 }}>
@@ -216,7 +243,7 @@ const NewsSearch = () => {
                     <MenuItem value={countries[country]}>{country}</MenuItem>
                   )}
                 </Select>
-                <Button onClick={() => {dropdownCountry && !filtersToAdd.countries.includes(dropdownCountry) && setFiltersToAdd({...filtersToAdd, countries: [...filtersToAdd.countries, dropdownCountry]})}} sx={{ ml: 1 }}>+ Add</Button>
+                <Button onClick={() => handleAddFilter('countries', dropdownCountry, setDropdownCountry)} sx={{ ml: 1 }}>+ Add</Button>
               </Box>
               <Button onClick={saveSelectedFilters} variant='contained' sx={{ mt: 2 }}>Done</Button>
             </FormControl>
