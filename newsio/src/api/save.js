@@ -3,8 +3,6 @@ import { getToken, getEmail } from "./authentication";
 
 export const saveNews = (newsStory) => {
 
-    console.log("EMAIL: " + getEmail());
-
     return fetch(`${newsBaseUrl}/save`, {
         
         method: 'POST',
