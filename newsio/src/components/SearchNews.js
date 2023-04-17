@@ -1,7 +1,7 @@
 import { Box, Button, Chip, CircularProgress, Container, FormControl, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { getNews } from 'api/search';
-import { saveNews } from 'api/save';
+import { getSavedNews, saveNews, unsaveNews } from 'api/save';
 import { NONE, categories, countries, languages } from 'api/filters';
 import { useEffect } from 'react';
 
@@ -10,6 +10,7 @@ const NewsSearch = () => {
   const [searchTermInvalid, setSearchTermInvalid] = useState(false);
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isStorySaved, setIsStorySaved] = useState(Array(25).fill(false));
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [dropdownCategory, setDropdownCategory] = useState('');
   const [dropdownLanguage, setDropdownLanguage] = useState('');
@@ -40,6 +41,7 @@ const NewsSearch = () => {
   }
 
   const doGetNews = ({ searchTerm }) => {
+    var prevSavedNews;
     setLoading(true);
     getNews({ ...selectedFilters, keyword: searchTerm })
       .then(response => {
@@ -50,7 +52,7 @@ const NewsSearch = () => {
       })
       .then(data => {
         setNews(data);
-        console.log(data);
+        // console.log(data);
         setLoading(false);
       })
       .catch(err => {
@@ -72,10 +74,61 @@ const NewsSearch = () => {
     setFiltersToAdd({ ...selectedFilters })
   }, [showFilterModal])
 
-  const doSaveNews = (storyInfo) => {
+  const doSaveNews = (storyInfo, i) => {
     setLoading(true);
-    saveNews(storyInfo);
-    setLoading(false);
+
+    if(!isStorySaved[i]) {
+      saveNews(storyInfo)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch news');
+        }
+        else {
+          const updateSaved = isStorySaved.map((saved, index) => {
+            if (i == index) {
+              return true;
+            }
+            else {
+              return saved;
+            }
+          });
+          setIsStorySaved(updateSaved);
+          setLoading(false);
+        }
+        return response.json();
+      })
+      .catch(err => {
+        console.error(err)
+        setLoading(false);
+      })
+    }
+    else {
+      unsaveNews(storyInfo)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch news');
+        }
+        else {
+          const updateSaved = isStorySaved.map((saved, index) => {
+            if (i == index) {
+              return false;
+            }
+            else {
+              return saved;
+            }
+          });
+          setIsStorySaved(updateSaved);
+          setLoading(false);
+        }
+        return response.json();
+      })
+      .catch(err => {
+        console.error(err)
+        setLoading(false);
+      })
+    }
+    
+    
   }
 
   const saveSelectedFilters = () => {
@@ -142,7 +195,7 @@ const NewsSearch = () => {
           ? <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center' }}>
               <CircularProgress></CircularProgress>
             </Box>
-          : (news && news.newsStories) && news.newsStories.map((story) => {
+          : (news && news.newsStories) && news.newsStories.map((story, index) => {
              return (
               <Box
                 sx={{
@@ -165,7 +218,7 @@ const NewsSearch = () => {
                     </Box>
                     <div> {/* for buttons to be next to each other */}
                       <Button sx={{ width: '115px' }} variant='outlined' target='_blank' href={story.url}>Read more</Button>
-                      <Button sx={{ width: '120px', marginLeft: 0.5 }} variant='outlined' onClick={() => doSaveNews(story)}>Save Story</Button>
+                      <Button sx={{ width: '120px', marginLeft: 0.5 }} variant='outlined' onClick={() => doSaveNews(story, index)}>{isStorySaved[index] ? "Unsave" : "Save Story"}</Button>
                     </div>
                   </Box>
                   {story.image && <Box component='img' sx={{ objectFit: 'contain', ml: 1.5 }} className='news-story-img' src={story.image} height='300px' width='300px'></Box>}

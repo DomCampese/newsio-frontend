@@ -3,7 +3,7 @@ import { getToken } from "./authentication";
 
 export const saveNews = (newsStory) => {
 
-    fetch(`${newsBaseUrl}/save`, {
+    return fetch(`${newsBaseUrl}/save`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
