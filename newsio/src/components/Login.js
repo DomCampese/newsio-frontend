@@ -114,9 +114,6 @@ export default function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link to="/forgot-password">
-                  <Typography variant="body2">Forgot password?</Typography>
-                </Link>
               </Grid>
               <Grid item>
                 <Link to="/signup">
